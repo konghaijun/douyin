@@ -1,0 +1,7 @@
+mysql:
+  url: 
+aliyun:
+  vod:
+    file:
+     keyid:
+     keysecret:
