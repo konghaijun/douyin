@@ -21,3 +21,23 @@ type DouyinFeedResponse struct {
 	VideoList  []repository.Video `json:"video_list"`
 	NextTime   int64              `json:"next_time"`
 }
+
+// DouyinUserRequest 用户信息请求结构体定义
+type DouyinUserRequest struct {
+	UserID int64  `json:"user_id"`
+	Token  string `json:"token"`
+}
+
+// DouyinUserResponse 用户信息响应结构体定义
+type DouyinUserResponse struct {
+	StatusCode int32           `json:"status_code"`
+	StatusMsg  string          `json:"status_msg"`
+	User       repository.User `json:"user"`
+}
+
+type DouyinUserRegisterResponse struct {
+	StatusCode int    `json:"status_code"`
+	StatusMsg  string `json:"status_msg"`
+	UserID     int64  `json:"user_id"`
+	Token      string `json:"token"`
+}

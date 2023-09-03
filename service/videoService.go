@@ -15,9 +15,13 @@ type VideoService struct {
 // GetDouyinFeed 根据请求参数获取 Douyin Feed 数据
 func (s *VideoService) GetDouyinFeed() (*models.DouyinFeedResponse, error) {
 
+	videoService := &VideoService{
+		videoDAO: &repository.VideoDAO{},
+	}
+
 	var response = &models.DouyinFeedResponse{}
 
-	videos, err := s.videoDAO.GetVideoList()
+	videos, err := videoService.videoDAO.GetVideoList()
 	if err != nil {
 		log.Println(err)
 		response.StatusCode = 1

@@ -1,5 +1,9 @@
 mysql:
-  url: 
+  user : douyin
+  password : a123456
+  host : 1.12.244.193
+  port : 3306
+  dbname : douyin
 aliyun:
   vod:
     file:
