@@ -92,3 +92,22 @@ func (*VideoDAO) GetVideoById(vid int64) (Video, error) {
 	}
 	return video, nil
 }
+
+// 评论或者删除评论
+func (*VideoDAO) AddComment(vid int64, atype string) error {
+	var video Video
+	result := utils.DB.Where("id = ?", vid).First(&video)
+	if result.Error != nil {
+		fmt.Println(result.Error)
+		panic(result.Error)
+		return result.Error
+	}
+
+	if atype == "1" {
+		video.CommentCount++
+	} else if atype == "2" {
+		video.CommentCount--
+	}
+	utils.DB.Save(&video)
+	return nil
+}

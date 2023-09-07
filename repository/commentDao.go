@@ -44,3 +44,13 @@ func (*CommentDao) DelComment(cid int64) error {
 	}
 	return nil
 }
+
+// 根据视频ID查评论
+func (*CommentDao) ListComment(cid int64) ([]Comment, error) {
+	var list []Comment
+	result := utils.DB.Where("video_id = ?", cid).Order("create_time desc").Find(&list)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return list, nil
+}

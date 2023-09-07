@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/KumaJie/douyin/models"
 	"github.com/KumaJie/douyin/repository"
+	"github.com/KumaJie/douyin/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
@@ -54,6 +55,11 @@ func (s *CommentService) CommentAction(c *gin.Context) (resp models.CommentRespo
 		userDAO: &repository.UserDAO{},
 	}
 
+	videoService := &VideoService{
+		videoDAO: &repository.VideoDAO{}}
+
+	tx := utils.DB.Begin()
+
 	//1发布评论 2删除评论
 	if atype == "1" {
 		content := c.Query("comment_text")
@@ -71,6 +77,7 @@ func (s *CommentService) CommentAction(c *gin.Context) (resp models.CommentRespo
 		cid, err := commentService.commentDao.AddComment(commment)
 		if err != nil {
 			fmt.Println(err)
+			tx.Rollback()
 			return resp, err
 		}
 
@@ -82,8 +89,6 @@ func (s *CommentService) CommentAction(c *gin.Context) (resp models.CommentRespo
 
 		timeStr := timeNow.Format("01-02")
 
-		resp.StatusCode = 0
-		resp.StatusMsg = "success"
 		resp.Comment.Content = content
 		resp.Comment.ID = cid
 		resp.Comment.User = user
@@ -104,13 +109,70 @@ func (s *CommentService) CommentAction(c *gin.Context) (resp models.CommentRespo
 		err = commentService.commentDao.DelComment(cid)
 		if err != nil {
 			fmt.Println(err)
+			tx.Rollback()
 			return resp, err
 		}
 
-		resp.StatusCode = 0
-		resp.StatusMsg = "success"
+	}
+
+	err = videoService.videoDAO.AddComment(videoId, atype)
+	if err != nil {
+		fmt.Println(err)
+		tx.Rollback()
+		return resp, err
+	}
+
+	tx.Commit()
+	resp.StatusCode = 0
+	resp.StatusMsg = "success"
+	return resp, nil
+}
+
+func (s *CommentService) CommentList(c *gin.Context) (resp models.CommentListResponse, err error) {
+
+	resp.StatusCode = 1
+
+	videoIdStr := c.Query("video_id")
+
+	videoId, err := strconv.ParseInt(videoIdStr, 10, 64)
+	if err != nil {
+		// 处理转换失败的情况
+		fmt.Println("Failed to convert user_id to int64:", err)
+		log.Println(err)
+		return resp, err
+		// 返回错误信息或采取其他操作
+	}
+	commentService := CommentService{
+		commentDao: &repository.CommentDao{},
+	}
+
+	userService := &UserService{
+		userDAO: &repository.UserDAO{},
+	}
+
+	commentList, err := commentService.commentDao.ListComment(videoId)
+
+	var newVideo = make([]models.CommentContent, len(commentList))
+
+	//遍历修改
+	for i, comment := range commentList {
+		u, err := userService.userDAO.GetUserById(comment.UserId)
+		if err != nil {
+			fmt.Println(err)
+			return resp, err
+		}
+
+		newVideo[i] = models.CommentContent{
+			ID:         comment.CommentId,
+			Content:    comment.Content,
+			CreateDate: comment.CreateTime.Format("01-02"),
+			User:       u,
+		}
 
 	}
+	resp.StatusCode = 0
+	resp.StatusMsg = "success"
+	resp.Comment = newVideo
 
 	return resp, nil
 }

@@ -41,5 +41,7 @@ func SetupRouter() *gin.Engine {
 	//评论
 	router.POST("/douyin/comment/action/", utils.JWTMiddleWare(), commentCtrl.CommentActionHandler)
 
+	router.GET("/douyin/comment/list/", utils.JWTMiddleWare(), commentCtrl.CommentListHandler)
+
 	return router
 }

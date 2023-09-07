@@ -19,3 +19,12 @@ func (ctrl *CommentController) CommentActionHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, resp)
 }
+
+func (ctrl *CommentController) CommentListHandler(c *gin.Context) {
+	resp, err := ctrl.commentService.CommentList(c)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, resp)
+	}
+	c.JSON(http.StatusOK, resp)
+}

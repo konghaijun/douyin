@@ -64,6 +64,7 @@ type DouyinUserRegisterResponse struct {
 	Token      string `json:"token"`
 }
 
+// 评论相关响应
 type CommentResponse struct {
 	StatusCode int            `json:"status_code"`
 	StatusMsg  string         `json:"status_msg"`
@@ -75,4 +76,11 @@ type CommentContent struct {
 	User       repository.User `json:"user"`
 	Content    string          `json:"content"`
 	CreateDate string          `json:"create_date"`
+}
+
+// 评论相关响应
+type CommentListResponse struct {
+	StatusCode int              `json:"status_code"`
+	StatusMsg  string           `json:"status_msg"`
+	Comment    []CommentContent `json:"comment_list"`
 }
