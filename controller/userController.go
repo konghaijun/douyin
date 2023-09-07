@@ -62,31 +62,3 @@ func (ctrl *UserController) DouyinUserLoginHandler(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, resp)
 }
-
-func (ctrl *UserController) DdddHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status_code": 0,
-		"status_msg":  "string",
-		"user": gin.H{
-			"id":               8,
-			"name":             "123456",
-			"follow_count":     0,
-			"follower_count":   0,
-			"is_follow":        true,
-			"avatar":           "string",
-			"background_image": "string",
-			"signature":        "string",
-			"total_favorited":  1,
-			"work_count":       0,
-			"favorite_count":   0,
-		},
-	})
-}
-func (ctrl *UserController) DdHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"status_code": 0,
-		"status_msg":  "string",
-		"user_id":     8,
-		"token":       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTM2NDY0NTIsImlhdCI6MTY5MzY0NjQ1MiwiaWQiOjh9.mvv8IRK_eLG8fGyPfMBmDAJCNBgWHG_9t-5WDHF_q5g",
-	})
-}

@@ -4,6 +4,12 @@ mysql:
   host : 1.12.244.193
   port : 3306
   dbname : douyin
+
+oss :
+  server :
+    ip: 192.168.50.87
+    port: 8080
+
 aliyun:
   vod:
     file:

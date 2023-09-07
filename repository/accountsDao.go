@@ -66,6 +66,7 @@ func (*UserDAO) CreateNewAccounts(username string, password string) (int64, erro
 
 }
 
+// 根据用户名获取密码
 func (*UserDAO) UserLogin(username, password string) (Accounts, error) {
 	var accounts Accounts
 

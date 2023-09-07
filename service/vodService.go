@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+
 	"github.com/KumaJie/douyin/repository"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
@@ -12,15 +13,17 @@ import (
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/auth/credentials"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/vod"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+
 	"github.com/spf13/viper"
+
 	"os"
-	"time"
 )
 
 var accessKeyId string = viper.GetString("aliyun.vod.file.keyid")
 
 var accessKeySecret string = viper.GetString("aliyun.vod.file.keysecret")
 
+// 初始化VOD客户端并获取上传地址和凭证
 func InitVodClient(accessKeyId string, accessKeySecret string) (client *vod.Client, err error) {
 	// 点播服务接入区域
 	regionId := "cn-shanghai"
@@ -38,6 +41,7 @@ func InitVodClient(accessKeyId string, accessKeySecret string) (client *vod.Clie
 	return vod.NewClientWithOptions(regionId, config, credential)
 }
 
+// 方法用于创建视频上传请求。它接受一个 vod 客户端和视频标题作为参数，然后返回一个 vod.CreateUploadVideoResponse 对象和一个错误。
 func MyCreateUploadVideo(client *vod.Client, title string) (response *vod.CreateUploadVideoResponse, err error) {
 	request := vod.CreateCreateUploadVideoRequest()
 	request.Title = title
@@ -51,6 +55,7 @@ func MyCreateUploadVideo(client *vod.Client, title string) (response *vod.Create
 	return client.CreateUploadVideo(request)
 }
 
+// 方法用于初始化阿里云对象存储（OSS）客户端。它接受一个包含上传权限信息的 UploadAuthDTO 对象和包含上传地址信息的 UploadAddressDTO 对象作为参数，然后返回一个 OSS 客户端和一个错误。
 func InitOssClient(uploadAuthDTO UploadAuthDTO, uploadAddressDTO UploadAddressDTO) (*oss.Client, error) {
 	client, err := oss.New(uploadAddressDTO.Endpoint,
 		uploadAuthDTO.AccessKeyId,
@@ -60,6 +65,7 @@ func InitOssClient(uploadAuthDTO UploadAuthDTO, uploadAddressDTO UploadAddressDT
 	return client, err
 }
 
+// 方法用于将本地文件上传到 OSS
 func UploadLocalFile(client *oss.Client, uploadAddressDTO UploadAddressDTO, localFile string) {
 	// 获取存储空间。
 	bucket, err := client.Bucket(uploadAddressDTO.Bucket)
@@ -75,6 +81,7 @@ func UploadLocalFile(client *oss.Client, uploadAddressDTO UploadAddressDTO, loca
 	}
 }
 
+// 方法用于创建 vod 客户端。它接受访问密钥 ID 和访问密钥 Secret 作为参数，然后返回一个配置好的 vod 客户端和一个错误。
 func CreateClient(accessKeyId *string, accessKeySecret *string) (_result *vod20170321.Client, _err error) {
 	config := &openapi.Config{
 		// 必填，您的 AccessKey ID
@@ -89,6 +96,9 @@ func CreateClient(accessKeyId *string, accessKeySecret *string) (_result *vod201
 	return _result, _err
 }
 
+// 方法用于根据视频 ID 获取视频播放信息。
+// 它接受视频 ID（字符串类型）作为参数，然后使用 vod 客户端发送请求来获取视频的播放地址、封面地址、标题和创建时间等信息。
+// 最后，它将获取到的视频信息填充到 repository.Video 结构体中并返回。
 func GetPlayInfo(videoID string) (repository.Video, error) {
 	client, err := CreateClient(tea.String(accessKeyId), tea.String(accessKeySecret))
 	if err != nil {
@@ -121,14 +131,14 @@ func GetPlayInfo(videoID string) (repository.Video, error) {
 		coverURL := *info.Body.VideoBase.CoverURL
 
 		creationTimeString := *info.Body.VideoBase.CreationTime
-		creationTime, err := time.Parse(time.RFC3339, creationTimeString)
+		//creationTime, err := time.Parse(time.RFC3339, creationTimeString)
 		fmt.Println(playURL, coverURL, title, creationTimeString)
 		if err != nil {
 			// 处理解析错误
 			return fmt.Errorf("failed to parse creation time: %w", err)
 		}
 
-		v = repository.Video{VideoID: -1, UserID: -1, PlayURL: playURL, CoverURL: coverURL, Title: title, CreateTime: creationTime}
+		//v = repository.Video{VideoID: -1, UserID: -1, PlayURL: playURL, CoverURL: coverURL, Title: title, CreateTime: creationTime}
 		return nil
 	}()
 
@@ -139,6 +149,7 @@ func GetPlayInfo(videoID string) (repository.Video, error) {
 	return v, nil
 }
 
+// 视频保存到本地目录
 func saveVideoToFile(data []byte, title string) error {
 	// 指定保存视频的文件路径
 	filePath := "..//Upload/" + title + ".mp4"
@@ -165,6 +176,7 @@ type UploadAuthDTO struct {
 	AccessKeySecret string
 	SecurityToken   string
 }
+
 type UploadAddressDTO struct {
 	Endpoint string
 	Bucket   string
@@ -194,6 +206,7 @@ func saveVideoToAli(title string) string {
 	var uploadAddressDTO UploadAddressDTO
 	var uploadAuthDecode, _ = base64.StdEncoding.DecodeString(response.UploadAuth)
 	var uploadAddressDecode, _ = base64.StdEncoding.DecodeString(response.UploadAddress)
+
 	json.Unmarshal(uploadAuthDecode, &uploadAuthDTO)
 	json.Unmarshal(uploadAddressDecode, &uploadAddressDTO)
 	// 使用UploadAuth和UploadAddress初始化OSS客户端

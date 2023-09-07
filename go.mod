@@ -14,14 +14,16 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.1 // indirect
 	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
 	github.com/alibabacloud-go/vod-20170321/v3 v3.0.5 // indirect
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.506 // indirect
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.536 // indirect
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.8+incompatible // indirect
 	github.com/aliyun/credentials-go v1.1.2 // indirect
+	github.com/aws/aws-sdk-go v1.38.20 // indirect
 	github.com/bytedance/sonic v1.10.0-rc3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -53,9 +55,12 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
+	github.com/u2takey/ffmpeg-go v0.5.0 // indirect
+	github.com/u2takey/go-utils v0.3.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.4.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/net v0.13.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect

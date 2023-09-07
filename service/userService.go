@@ -53,7 +53,7 @@ func (s *UserService) Register(username string, password string) (resp models.Do
 		return resp, err
 	}
 
-	token, err := utils.GetJwtToken(userid)
+	token, err := utils.GetToken(userid)
 	if err != nil {
 		log.Println(err)
 		return resp, err
@@ -80,7 +80,7 @@ func (s *UserService) Login(username, password string) (resp models.DouyinUserRe
 	// 验证密码
 	if account.Password == password {
 		// 密码正确
-		token, err := utils.GetJwtToken(account.UserId)
+		token, err := utils.GetToken(account.UserId)
 		if err != nil {
 			log.Println(err)
 			return resp, err
