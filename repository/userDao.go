@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/KumaJie/douyin/utils"
 	"log"
 )
@@ -52,4 +53,33 @@ func (*UserDAO) GetUserById(id int64) (User, error) {
 		return user, utils.DB.Error
 	}
 	return user, nil
+}
+
+// 修改关注数量
+func (*UserDAO) Modify(atype string, uid, toUid int64) error {
+	user := User{}
+	toUser := User{}
+
+	result := utils.DB.First(&user, uid)
+	if result.Error != nil {
+		fmt.Println(result.Error)
+	}
+
+	result = utils.DB.First(&toUser, toUid)
+	if result.Error != nil {
+		fmt.Println(result.Error)
+	}
+
+	if atype == "1" {
+		user.FollowCount++
+		toUser.FollowerCount++
+	} else if atype == "2" {
+		user.FollowCount--
+		toUser.FollowerCount--
+	}
+
+	utils.DB.Save(&user)
+	utils.DB.Save(&toUser)
+	return nil
+
 }

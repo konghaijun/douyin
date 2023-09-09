@@ -84,3 +84,9 @@ type CommentListResponse struct {
 	StatusMsg  string           `json:"status_msg"`
 	Comment    []CommentContent `json:"comment_list"`
 }
+
+type FollowListResponse struct {
+	StatusCode int               `json:"status_code"`
+	StatusMsg  string            `json:"status_msg"`
+	UserList   []repository.User `json:"user_list"`
+}

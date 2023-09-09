@@ -12,6 +12,7 @@ func SetupRouter() *gin.Engine {
 	userCtrl := &controller.UserController{}
 	favoriteCtrl := &controller.FavoriteController{}
 	commentCtrl := &controller.CommentController{}
+	followCtrl := &controller.FollowController{}
 
 	router.Static("/static", "./static")
 	//视频投稿
@@ -41,7 +42,14 @@ func SetupRouter() *gin.Engine {
 	//评论
 	router.POST("/douyin/comment/action/", utils.JWTMiddleWare(), commentCtrl.CommentActionHandler)
 
+	//获取评论列表
 	router.GET("/douyin/comment/list/", utils.JWTMiddleWare(), commentCtrl.CommentListHandler)
+
+	//关注操作
+	router.POST("/douyin/relation/action/", utils.JWTMiddleWare(), followCtrl.DouyinRelationActionHandler)
+
+	//关注列表
+	router.GET("/douyin/relation/follow/list/", utils.JWTMiddleWare(), followCtrl.DouyinRelationFollowListHandler)
 
 	return router
 }

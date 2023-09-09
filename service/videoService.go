@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/KumaJie/douyin/models"
 	"github.com/KumaJie/douyin/repository"
+	"github.com/KumaJie/douyin/utils"
 	"github.com/KumaJie/douyin/utils/videoutil"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -60,6 +61,10 @@ func (s *VideoService) GetDouyinFeed(c *gin.Context) (*models.DouyinFeedResponse
 	favoriteService := &FavoriteService{
 		favoriteDAO: &repository.FavoriteDao{}}
 
+	followService := &FollowService{
+		followDao: &repository.FollowDao{},
+	}
+
 	//获取视频数组
 	videos, err := videoService.videoDAO.GetVideoList(latestTime)
 	if err != nil {
@@ -70,11 +75,28 @@ func (s *VideoService) GetDouyinFeed(c *gin.Context) (*models.DouyinFeedResponse
 	//创建一个相同大小的数组
 	var newVideo = make([]models.FeedVideo, len(videos))
 
+	var tokenStruck *utils.MyClaims
+
+	tokenStr := c.Query("token")
+	if tokenStr != "" {
+		tokenStruck, _ = utils.ParseToken(tokenStr)
+	}
+
 	//遍历修改
 	for i, video := range videos {
 		fmt.Println(video)
 		//根据uid查user对象
 		u, err := userService.userDAO.GetUserById(video.UserInfoID)
+
+		if tokenStruck != nil && tokenStruck.Uid != 0 {
+			isFollow, err := followService.followDao.CheckFollow(tokenStruck.Uid, video.UserInfoID)
+			if err != nil {
+				log.Println(err)
+				return response, err
+			}
+			u.IsFollow = isFollow
+		}
+
 		if err != nil {
 			fmt.Println(err)
 			log.Println(err)

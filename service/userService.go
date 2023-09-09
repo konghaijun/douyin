@@ -1,17 +1,20 @@
 package service
 
 import (
+	"fmt"
 	"github.com/KumaJie/douyin/models"
 	"github.com/KumaJie/douyin/repository"
 	"github.com/KumaJie/douyin/utils"
+	"github.com/gin-gonic/gin"
 	"log"
+	"strconv"
 )
 
 type UserService struct {
 	userDAO *repository.UserDAO
 }
 
-func (s *UserService) GetUserById(req models.DouyinUserRequest) (resp models.DouyinUserResponse, err error) {
+func (s *UserService) GetUserById(c *gin.Context) (resp models.DouyinUserResponse, err error) {
 	// 判断token
 	// 根据id获取user
 
@@ -19,13 +22,25 @@ func (s *UserService) GetUserById(req models.DouyinUserRequest) (resp models.Dou
 		userDAO: &repository.UserDAO{},
 	}
 
-	user, err := userService.userDAO.GetUserById(req.UserID)
+	to_user_id_str := c.Query("user_id")
+
+	toUserID, err := strconv.ParseInt(to_user_id_str, 10, 64)
+	if err != nil {
+		// 处理转换失败的情况
+		fmt.Println("Failed to convert user_id to int64:", err)
+		log.Println(err)
+		return
+		// 返回错误信息或采取其他操作
+	}
+
+	user, err := userService.userDAO.GetUserById(toUserID)
 	if err != nil {
 		log.Println(err)
 		resp.StatusCode = -1
 		resp.StatusMsg = "fail"
 		return resp, err
 	}
+
 	resp.User = user
 	resp.StatusCode = 0
 	resp.StatusMsg = "success"
