@@ -58,9 +58,21 @@ func (*FollowDao) CheckFollow(uid, toUid int64) (bool, error) {
 	}
 }
 
+// 查看关注列表
 func (*FollowDao) GetFollowList(uid int64) ([]int64, error) {
 	var list []int64
 	result := utils.DB.Where("from_user_id=?", uid).Table("follow").Select("to_user_id").Find(&list)
+	if result.Error != nil {
+		fmt.Println(result.Error)
+		return list, result.Error
+	}
+	return list, nil
+}
+
+// 查看粉丝列表
+func (*FollowDao) GetFollowerList(uid int64) ([]int64, error) {
+	var list []int64
+	result := utils.DB.Where("to_user_id=?", uid).Table("follow").Select("from_user_id").Find(&list)
 	if result.Error != nil {
 		fmt.Println(result.Error)
 		return list, result.Error

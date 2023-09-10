@@ -51,5 +51,11 @@ func SetupRouter() *gin.Engine {
 	//关注列表
 	router.GET("/douyin/relation/follow/list/", utils.JWTMiddleWare(), followCtrl.DouyinRelationFollowListHandler)
 
+	//获取粉丝列表
+	router.GET("/douyin/relation/follower/list/", utils.JWTMiddleWare(), followCtrl.DouyinRelationFollowerListHandler)
+
+	//获取好友列表
+	router.GET("/douyin/relation/friend/list/", utils.JWTMiddleWare(), followCtrl.DouyinRelationFriendListHandler)
+
 	return router
 }

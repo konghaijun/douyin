@@ -93,6 +93,7 @@ func (s *FollowService) RelationAction(c *gin.Context) (models.BaseResponse, err
 
 }
 
+// 获取关注
 func (s *FollowService) GetFollowList(c *gin.Context) (models.FollowListResponse, error) {
 	var resp models.FollowListResponse
 	resp.StatusCode = 1
@@ -135,14 +136,129 @@ func (s *FollowService) GetFollowList(c *gin.Context) (models.FollowListResponse
 			return resp, err
 		}
 
-		/*	isFollow, err := followService.followDao.CheckFollow(UserID, user)
-			if err != nil {
-				log.Println(err)
-				return resp, err
-			}*/
+		u.IsFollow = true
+		newUserList = append(newUserList, u)
+
+	}
+
+	resp.StatusCode = 0
+	resp.StatusMsg = "success"
+	resp.UserList = newUserList
+	return resp, nil
+}
+
+// 获取粉丝列表
+func (s *FollowService) GetFollowerList(c *gin.Context) (models.FollowListResponse, error) {
+	var resp models.FollowListResponse
+	resp.StatusCode = 1
+	resp.StatusMsg = "fail"
+
+	userIdStr := c.Query("user_id")
+
+	userService := &UserService{
+		userDAO: &repository.UserDAO{},
+	}
+
+	followService := &FollowService{
+		followDao: &repository.FollowDao{},
+	}
+
+	UserID, err := strconv.ParseInt(userIdStr, 10, 64)
+	if err != nil {
+		// 处理转换失败的情况
+		fmt.Println("Failed to convert user_id to int64:", err)
+		log.Println(err)
+		// 返回错误信息或采取其他操作
+	}
+
+	userList, err := followService.followDao.GetFollowerList(UserID)
+	if err != nil {
+		// 处理转换失败的情况
+		fmt.Println("Failed to convert user_id to int64:", err)
+		log.Println(err)
+		// 返回错误信息或采取其他操作
+	}
+
+	var newUserList []repository.User
+
+	for _, user := range userList {
+		u, err := userService.userDAO.GetUserById(user)
+		if err != nil {
+			// 处理转换失败的情况
+			fmt.Println("Failed to convert user_id to int64:", err)
+			log.Println(err)
+			return resp, err
+		}
 
 		u.IsFollow = true
 		newUserList = append(newUserList, u)
+
+	}
+
+	resp.StatusCode = 0
+	resp.StatusMsg = "success"
+	resp.UserList = newUserList
+	return resp, nil
+}
+
+// 获取好友
+func (s *FollowService) GetFriendList(c *gin.Context) (models.FollowListResponse, error) {
+	var resp models.FollowListResponse
+	resp.StatusCode = 1
+	resp.StatusMsg = "fail"
+
+	userIdStr := c.Query("user_id")
+
+	userService := &UserService{
+		userDAO: &repository.UserDAO{},
+	}
+
+	followService := &FollowService{
+		followDao: &repository.FollowDao{},
+	}
+
+	UserID, err := strconv.ParseInt(userIdStr, 10, 64)
+	if err != nil {
+		// 处理转换失败的情况
+		fmt.Println("Failed to convert user_id to int64:", err)
+		log.Println(err)
+		// 返回错误信息或采取其他操作
+	}
+
+	//取到我的关注列表
+	userList, err := followService.followDao.GetFollowList(UserID)
+	if err != nil {
+		// 处理转换失败的情况
+		fmt.Println("Failed to convert user_id to int64:", err)
+		log.Println(err)
+		// 返回错误信息或采取其他操作
+	}
+
+	var newUserList []repository.User
+
+	for _, user := range userList {
+
+		//判断对方是否关注我
+		f, err := followService.followDao.CheckFollow(user, UserID)
+		if err != nil {
+			// 处理转换失败的情况
+			fmt.Println("Failed to convert user_id to int64:", err)
+			log.Println(err)
+			return resp, err
+		}
+
+		if f {
+			u, err := userService.userDAO.GetUserById(user)
+			if err != nil {
+				// 处理转换失败的情况
+				fmt.Println("Failed to convert user_id to int64:", err)
+				log.Println(err)
+				return resp, err
+			}
+
+			u.IsFollow = true
+			newUserList = append(newUserList, u)
+		}
 
 	}
 
